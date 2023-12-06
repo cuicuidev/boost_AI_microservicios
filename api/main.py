@@ -15,9 +15,9 @@ class PredictionForm(BaseModel):
     
 def get_prediction(data: RequestForm):
     model = load_model()
-    prediction = model.predict([data.sepal_length, data.sepal_width, data.petal_length, data.petal_width])
+    prediction = model.predict([[data.sepal_length, data.sepal_width, data.petal_length, data.petal_width]])
     encoder = load_encoder()
-    prediction = encoder.inverse_transform(prediction)
+    prediction = encoder.inverse_transform(prediction)[0]
     return prediction
 
 def load_model():
@@ -37,5 +37,5 @@ app = FastAPI()
 @app.post("/predict")
 async def predict(data: RequestForm):
     prediction = get_prediction(data)
-    response = PredictionForm(category=prediction)
+    response = PredictionForm(species=prediction)
     return response
